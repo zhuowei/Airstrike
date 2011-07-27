@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Random;
 
 import org.bukkit.entity.Player;
+import org.bukkit.entity.TNTPrimed;
 import org.bukkit.event.player.PlayerChatEvent;
 import org.bukkit.event.player.PlayerListener;
 import org.bukkit.ChatColor;
@@ -32,7 +33,7 @@ public class AirstrikePlayerListener extends PlayerListener {
     public AirstrikePlayerListener(Airstrike instance) {
         plugin = instance;
     }
-    @Override
+    //@Override
     public void onPlayerCommandPreprocess(PlayerChatEvent event) {
     	String[] split = event.getMessage().split(" ");
         final Player player = event.getPlayer();
@@ -105,14 +106,14 @@ public class AirstrikePlayerListener extends PlayerListener {
             		    				roll = (rg.nextBoolean() ? distance : -distance);
             		        			loc.setZ( loc.getZ() + (roll) );
             							
-										try {
+										/*try {
 											spawn = spawner.create(player, plugin, "Creeper", "Creeper");
 											spawn.teleportTo(loc);
-											world.a(spawn.getHandle());
+											//world.a(spawn.getHandle());
 											System.out.println("creeper teleported");
 										} catch (SpawnException e1) {
 											e1.printStackTrace();
-										}
+										}*/
             		        			
             							try {
             		        				sleep(500);
@@ -134,15 +135,12 @@ public class AirstrikePlayerListener extends PlayerListener {
             				new Thread()  {
             					@Override public void run() {
             						setPriority( Thread.MIN_PRIORITY );
-            						for (int i=0; i<amount; i++) {  				
-            							EntityTNTPrimed tnt = new EntityTNTPrimed(cWorld.getHandle(),0,0,0);
-            		        			CraftTNTPrimed tntp = new CraftTNTPrimed((CraftServer) server, tnt);
-            		        			cWorld.getHandle().a(tnt);
+							for (int i=0; i<amount; i++) { 
             		        			Location loc = victims.get(0).getLocation();
             		        			loc.setY(loc.getY()+height);
             		        			loc.setX( loc.getX() + (rg.nextInt((2*area)+1)-area) );
             		        			loc.setZ( loc.getZ() + (rg.nextInt((2*area)+1)-area) );
-            		        			tntp.teleportTo(loc);
+            		        			TNTPrimed tntp = victims.get(0).getWorld().spawn(loc, TNTPrimed.class);
             		        			try {
             		        				sleep(500);
             		        			}catch (InterruptedException e) {

@@ -17,6 +17,7 @@ import org.bukkit.craftbukkit.CraftWorld;
 import org.bukkit.craftbukkit.entity.CraftEntity;
 import org.bukkit.craftbukkit.entity.CraftTNTPrimed;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.TNTPrimed;
 import org.bukkit.plugin.Plugin;
 
 import airstrike.AirstrikeSpawner.SpawnException;
@@ -193,13 +194,13 @@ public class CommandHandler implements CommandExecutor {
     		    				roll = (rg.nextBoolean() ? distance : -distance);
     		        			loc.setZ( loc.getZ() + (roll) );
     							
-								try {
-									spawn = spawner.create(victim, plugin, "Creeper", "Creeper");
-									spawn.teleportTo(loc);
-									world.a(spawn.getHandle());
+								/*try {
+									//spawn = spawner.create(victim, plugin, "Creeper", "Creeper");
+									//spawn.teleportTo(loc);
+									//world.a(spawn.getHandle());
 								} catch (SpawnException e1) {
 									e1.printStackTrace();
-								}
+								}*/
     		        			
     							try {
     		        				sleep(500);
@@ -224,14 +225,11 @@ public class CommandHandler implements CommandExecutor {
     					public void run() {
     						setPriority( Thread.MIN_PRIORITY );
     						for (int i=0; i<amount; i++) {  
-    							EntityTNTPrimed tnt = new EntityTNTPrimed(cWorld.getHandle(),0,0,0);
-    		        			CraftTNTPrimed tntp = new CraftTNTPrimed((CraftServer) server, tnt);
-    		        			cWorld.getHandle().a(tnt);
     		        			Location loc = victims.get(0).getLocation();
     		        			loc.setY(loc.getY()+height);
     		        			loc.setX( loc.getX() + (rg.nextInt((2*area)+1)-area) );
     		        			loc.setZ( loc.getZ() + (rg.nextInt((2*area)+1)-area) );
-    		        			tntp.teleportTo(loc);
+            		        		TNTPrimed tntp = victims.get(0).getWorld().spawn(loc, TNTPrimed.class);
     		        			try {
     		        				sleep(500);
     		        			}catch (InterruptedException e) {
