@@ -21,7 +21,7 @@ public class Airstrike extends JavaPlugin {
 	public static String propertiesFile = "plugins/Airstrike/Airstrike.properties";
 	static PluginProperties config;
 	public static PermissionHandler Permissions;
-	private  Plugin perm;
+	private Plugin perm;
 	
 	@Override
 	public void onDisable() {
@@ -47,4 +47,5 @@ public class Airstrike extends JavaPlugin {
 	          }
 	      }
 	}
+
 }

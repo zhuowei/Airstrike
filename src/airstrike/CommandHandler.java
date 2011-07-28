@@ -16,6 +16,7 @@ import org.bukkit.craftbukkit.CraftServer;
 import org.bukkit.craftbukkit.CraftWorld;
 import org.bukkit.craftbukkit.entity.CraftEntity;
 import org.bukkit.craftbukkit.entity.CraftTNTPrimed;
+import org.bukkit.entity.Creeper;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.TNTPrimed;
 import org.bukkit.plugin.Plugin;
@@ -190,21 +191,13 @@ public class CommandHandler implements CommandExecutor {
     						World world = ((org.bukkit.craftbukkit.CraftWorld)victim.getWorld()).getHandle();
     						for (int i=0; i<camount; i++) {  		
     							int roll = (rg.nextBoolean() ? distance : -distance);
-    		    				loc.setX( loc.getX() + (roll) );
-    		    				roll = (rg.nextBoolean() ? distance : -distance);
-    		        			loc.setZ( loc.getZ() + (roll) );
-    							
-								/*try {
-									//spawn = spawner.create(victim, plugin, "Creeper", "Creeper");
-									//spawn.teleportTo(loc);
-									//world.a(spawn.getHandle());
-								} catch (SpawnException e1) {
-									e1.printStackTrace();
-								}*/
-    		        			
+	    		    				loc.setX( loc.getX() + (roll) );
+	    		    				roll = (rg.nextBoolean() ? distance : -distance);
+	    		        			loc.setZ( loc.getZ() + (roll) );
+    							Creeper creep = victim.getWorld().spawn(loc, Creeper.class);
     							try {
-    		        				sleep(500);
-    		        			}catch (InterruptedException e) {
+    		        					sleep(500);
+    		        				}catch (InterruptedException e) {
     							}
     		    			}
     					}
@@ -248,7 +241,7 @@ public class CommandHandler implements CommandExecutor {
         		player.sendMessage(ChatColor.RED +"Only Admins can use this command!");
         		return true;
         	}
-        	if(args[0].equalsIgnoreCase("help")) {
+        	if(args.length == 0 || args[0].equalsIgnoreCase("help")) {
         		sendMSG(sender, "assethelp");
         		return true;
         	}
