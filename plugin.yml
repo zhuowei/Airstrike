@@ -1,12 +1,12 @@
 name: Airstrike
 main: airstrike.Airstrike
-version: 1.2
+version: 1.3
 authors: [muCkk, zhuowei]
 commands:
   as:
-    description: bomb players with TNT or creepers
+    description: bomb players with TNT, creepers, or arrows
     usage: |
-             /as <tnt/cr> <player> <amount> <height>
+             /as <tnt/cr/arrow> <player> <amount> <height>
   asset:
       description: Used to set up the config
       usage: |

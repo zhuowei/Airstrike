@@ -19,7 +19,9 @@ import org.bukkit.craftbukkit.entity.CraftTNTPrimed;
 import org.bukkit.entity.Creeper;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.TNTPrimed;
+import org.bukkit.entity.Arrow;
 import org.bukkit.plugin.Plugin;
+import org.bukkit.util.Vector;
 
 import airstrike.AirstrikeSpawner.SpawnException;
 
@@ -56,49 +58,11 @@ public class CommandHandler implements CommandExecutor {
 		return false;
 	}
 	private void sendMSG(CommandSender sender, String msg) {
-		// Console
-		if(sender.toString().contains("ColouredConsoleSender")) {
-			if(msg.equalsIgnoreCase("help")) {
-				System.out.println("Command: as <tnt/cr> <player> <amount> <height>");
-				System.out.println("<tnt/cr> TNT or Creeper? If no <amount> is given the default value is used.");
-				System.out.println("<height> is for TNT only.");
-				System.out.println("Command: asset help - shows admin commands");
-				return;
-			}
-			if(msg.equalsIgnoreCase("notfound")) {
-				System.out.println("Player not found!");
-				return;
-			}
-			if(msg.equalsIgnoreCase("morefound")) {
-				System.out.println("Found more than one Player!");
-				return;
-			}
-			if(msg.equalsIgnoreCase("assethelp")) {
-				System.out.println("Command: asset adminsOnly <true/false>");	
-				System.out.println("Command: asset destroyBlocks <true/false>");
-				System.out.println("Command: asset creeperDistance <number>");
-				System.out.println("Command: asset creeperAmount <number>");
-				System.out.println("Command: asset TNTAmount <number>");
-				System.out.println("Command: asset height <number>");
-				System.out.println("Command: asset area <number>");
-	    		return;
-			}
-			if(msg.equalsIgnoreCase("valuedb")) {
-				System.out.println("Value set. Type '/reload' for the change to take effect (will reload all plugins).");
-				return;
-			}
-			if(msg.equalsIgnoreCase("value")) {
-				System.out.println("Value set.");
-				return;
-			}
-		}
-		
-		// Player
-		Player player = (Player) sender;
+		CommandSender player = sender;
 		if(msg.equalsIgnoreCase("help")) {
 			player.sendMessage(ChatColor.YELLOW+"Airstrike:");
-			player.sendMessage(ChatColor.GOLD+"/as <tnt/cr> <player> <amount> <height>");
-			player.sendMessage(ChatColor.GOLD+"<tnt/cr> TNT or Creeper? If no <amount> is given the default value is used.");
+			player.sendMessage(ChatColor.GOLD+"/as <tnt/cr/arrow> <player> <amount> <height>");
+			player.sendMessage(ChatColor.GOLD+"<tnt/cr/arrow> TNT, arrow, or Creeper? If no <amount> is given the default value is used.");
 			player.sendMessage(ChatColor.GOLD+"<height> is for TNT only.");
 			if(checkPermission(sender, "airstrike.asset")) {
 				player.sendMessage(ChatColor.LIGHT_PURPLE+"/asset help - shows admin commands");
@@ -115,13 +79,14 @@ public class CommandHandler implements CommandExecutor {
 		}
 		if(msg.equalsIgnoreCase("assethelp")) {
 			player.sendMessage(ChatColor.LIGHT_PURPLE+"/asset adminsOnly <true/false>");	
-    		player.sendMessage(ChatColor.LIGHT_PURPLE+"/asset destroyBlocks <true/false>");
-    		player.sendMessage(ChatColor.LIGHT_PURPLE+"/asset creeperDistance <number>");
-    		player.sendMessage(ChatColor.LIGHT_PURPLE+"/asset creeperAmount <number>");
-    		player.sendMessage(ChatColor.LIGHT_PURPLE+"/asset TNTAmount <number>");
-    		player.sendMessage(ChatColor.LIGHT_PURPLE+"/asset height <number>");
-    		player.sendMessage(ChatColor.LIGHT_PURPLE+"/asset area <number>");
-    		return;
+	    		player.sendMessage(ChatColor.LIGHT_PURPLE+"/asset destroyBlocks <true/false>");
+	    		player.sendMessage(ChatColor.LIGHT_PURPLE+"/asset creeperDistance <number>");
+	    		player.sendMessage(ChatColor.LIGHT_PURPLE+"/asset creeperAmount <number>");
+	    		player.sendMessage(ChatColor.LIGHT_PURPLE+"/asset TNTAmount <number>");
+	    		player.sendMessage(ChatColor.LIGHT_PURPLE+"/asset height <number>");
+	    		player.sendMessage(ChatColor.LIGHT_PURPLE+"/asset area <number>");
+	    		player.sendMessage(ChatColor.LIGHT_PURPLE+"/asset arrowAmount <number>");
+    			return;
 		}
 		if(msg.equalsIgnoreCase("valuedb")) {
 			player.sendMessage(ChatColor.LIGHT_PURPLE+"Value set. Type '/reload' for the change to take effect (will reload all plugins).");
@@ -163,6 +128,10 @@ public class CommandHandler implements CommandExecutor {
         		return true;
         	}
     		else {
+			if(args.length < 2) {
+				sendMSG(sender, "help");
+				return true;
+			}
     			final List<Player> victims = server.matchPlayer(args[1]);
         		if (victims.size() < 1) {
         			sendMSG(sender, "notfound");
@@ -222,7 +191,7 @@ public class CommandHandler implements CommandExecutor {
     		        			loc.setY(loc.getY()+height);
     		        			loc.setX( loc.getX() + (rg.nextInt((2*area)+1)-area) );
     		        			loc.setZ( loc.getZ() + (rg.nextInt((2*area)+1)-area) );
-            		        		TNTPrimed tntp = victims.get(0).getWorld().spawn(loc, TNTPrimed.class);
+            		        		TNTPrimed tntp = victim.getWorld().spawn(loc, TNTPrimed.class);
     		        			try {
     		        				sleep(500);
     		        			}catch (InterruptedException e) {
@@ -232,6 +201,37 @@ public class CommandHandler implements CommandExecutor {
     				}.start();
     				return true;
     			}
+
+    			if (args0.equalsIgnoreCase("arrow") && (checkPermission(sender, "airstrike.as.arrow") || checkPermission(sender, "airstrike.as"))) {
+    				if(args.length>2) amount = Integer.valueOf(args[2]); 
+    				else amount = config.getInteger("arrowAmount", PluginProperties.arrowAmount);
+    				area = config.getInteger("area", PluginProperties.area);
+    				new Thread()  {
+    					@Override 
+    					public void run() {
+    						setPriority( Thread.MIN_PRIORITY );
+    						for (int i = 0; i < amount; i++) {  
+	    		        			Location loc = victim.getLocation();
+	    		        			loc.setY(loc.getY() + 15);
+	    		        			loc.setX( loc.getX() + (rg.nextInt((2*area)+1)-area) );
+	    		        			loc.setZ( loc.getZ() + (rg.nextInt((2*area)+1)-area) );
+							loc.setPitch(-90);
+							Vector vec = new Vector(0, -1, 0);
+		    		        		Arrow arrow = victim.getWorld().spawnArrow(loc, vec, 0.6f, 12f);
+							arrow.setFireTicks(500);
+							if (i % 5 == 0) {
+		    		        			try {
+		    		        				sleep(300);
+		    		        			}
+								catch (InterruptedException e) {
+		    						}
+							}
+    		    				}
+    					}
+    				}.start();
+    				return true;
+    			}
+
     		}
     		return true;
     	}
@@ -288,6 +288,10 @@ public class CommandHandler implements CommandExecutor {
 				config.setProperty("adminsOnly", value);
 				sendMSG(sender, "value");
 				return true;
+			}
+			if(args[0].equalsIgnoreCase("arrowAmount")) {
+				config.setProperty("arrowAmount", value);
+				sendMSG(sender, "value");
 			}
         }
 		return false;      	

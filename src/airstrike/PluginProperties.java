@@ -15,6 +15,7 @@ public class PluginProperties extends Properties {
 	static int	TNTAmount = 1;
 	static int	height = 8;
 	static int	area = 6;
+	public static int arrowAmount = 30;
 	static boolean adminsOnly = false;
 	
 	private String fileName, dir;
@@ -23,9 +24,10 @@ public class PluginProperties extends Properties {
 	private String info = "destroyBlocks: true: Blocks get destroyed - false: Block won't get touched\n" 
 								+"height: Sets height in which the TNT will spawn\n"
 								+"area: Defines the cuboid area size in which the TNT will spawn\n"
-								+"TNTAmount: Sets the amount for /as <player>"
-								+"creeperDistance: Distance in which creepers will spawn"
-								+"creeperAmount: Amount of creepers";
+								+"TNTAmount: Sets the amount for /as <player>\n"
+								+"creeperDistance: Distance in which creepers will spawn\n"
+								+"creeperAmount: Amount of creepers\n"
+								+"arrowAmount: sets the amount for /as arrow <player>";
 	
 	public PluginProperties(String file, String dir) {
 		this.fileName = file;
@@ -51,6 +53,7 @@ public class PluginProperties extends Properties {
 			 getInteger("TNTAmount", TNTAmount);
 			 getInteger("height", height);
 			 getInteger("area", area);
+			getInteger("arrowAmount", arrowAmount);
 		}
 	}	
 
