@@ -5,7 +5,7 @@
   <property name="bin" location="bin" />
   <property name="lib" location="lib" />
   <property name="doc" location="doc" />
-  <property name="jar" value="airstrike.jar" />
+  <property name="jar" value="moreairstrike.jar" />
 
   <fileset id="libraries" dir="${lib}">
     <include name="**/*.jar" />
