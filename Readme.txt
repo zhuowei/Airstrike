@@ -1,4 +1,4 @@
-Airstrike v1.1
+Airstrike v1.4
 
 Installation:
 - Put the Airstrike folder and the jar into Bukkit's plugin folder
@@ -12,9 +12,9 @@ Installation:
 
 Commands:
     /as help  - lists all commands
-    /as <tnt/cr> <player> <amount> <height>
+    /as <tnt/cr/arrow/wolf> <player> <amount> <height>
     	
-    	<tnt/cr> - TNT or Creeper?
+    	<tnt/cr/arrow/wolf> - TNT, arrows, wolves, or Creeper?
 		<player> - Victim
 		The plugin will use the default values if not given:
 		<amount> - Set the amount of TNT blocks/creepers

@@ -12,8 +12,8 @@ public class AirstrikeEntityListener extends EntityListener {
 	}
 	public void onEntityExplode(EntityExplodeEvent event) {
 		if (event.isCancelled()) {
-            return;
-        }
+			return;
+        	}
 		event.setCancelled(true);
 		return; 
 	}

@@ -16,6 +16,7 @@ public class PluginProperties extends Properties {
 	static int	height = 8;
 	static int	area = 6;
 	public static int arrowAmount = 30;
+	public static int wolfAmount = 2;
 	static boolean adminsOnly = false;
 	
 	private String fileName, dir;
@@ -25,9 +26,10 @@ public class PluginProperties extends Properties {
 								+"height: Sets height in which the TNT will spawn\n"
 								+"area: Defines the cuboid area size in which the TNT will spawn\n"
 								+"TNTAmount: Sets the amount for /as <player>\n"
-								+"creeperDistance: Distance in which creepers will spawn\n"
+								+"creeperDistance: Distance in which creepers and wolves will spawn\n"
 								+"creeperAmount: Amount of creepers\n"
-								+"arrowAmount: sets the amount for /as arrow <player>";
+								+"arrowAmount: sets the amount for /as arrow <player>\n"
+								+"wolfAmount: amount of wolves";
 	
 	public PluginProperties(String file, String dir) {
 		this.fileName = file;
@@ -54,6 +56,7 @@ public class PluginProperties extends Properties {
 			 getInteger("height", height);
 			 getInteger("area", area);
 			getInteger("arrowAmount", arrowAmount);
+			getInteger("wolfAmount", wolfAmount);
 		}
 	}	
 

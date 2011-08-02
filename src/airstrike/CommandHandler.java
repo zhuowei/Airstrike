@@ -3,27 +3,19 @@ package airstrike;
 import java.util.List;
 import java.util.Random;
 
-import net.minecraft.server.EntityTNTPrimed;
-import net.minecraft.server.World;
-
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Server;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.craftbukkit.CraftServer;
-import org.bukkit.craftbukkit.CraftWorld;
-import org.bukkit.craftbukkit.entity.CraftEntity;
-import org.bukkit.craftbukkit.entity.CraftTNTPrimed;
+import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Creeper;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.TNTPrimed;
-import org.bukkit.entity.Arrow;
+import org.bukkit.entity.Wolf;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.util.Vector;
-
-import airstrike.AirstrikeSpawner.SpawnException;
 
 public class CommandHandler implements CommandExecutor {
 	private Airstrike plugin;
@@ -98,25 +90,18 @@ public class CommandHandler implements CommandExecutor {
 		}
 	}
 	public boolean onCommand(CommandSender sender, Command command, String commandLabel, String[] args) {
-		Player player = null;
-		try {
-			player = (Player) sender;
-		}catch (ClassCastException e) {
-			// Sender is org.bukkit.craftbukkit.command.ColouredConsoleSender
-		}
+
 		String cmd = command.getName().toLowerCase();
 		final Server server = plugin.getServer();
-		
-		
-    	
+
 		if (cmd.equals("as")) {		
 			if(!checkPermission(sender, "airstrike.as") ) {	
 				sendMSG(sender, "help");
         		return true;
         	}
-			String args0;
+		String args0;
 			
-			try {
+		try {
 	    		args0 = args[0];
 	    	} catch(ArrayIndexOutOfBoundsException ex) {
 	    		sendMSG(sender, "help");
@@ -135,15 +120,13 @@ public class CommandHandler implements CommandExecutor {
     			final List<Player> victims = server.matchPlayer(args[1]);
         		if (victims.size() < 1) {
         			sendMSG(sender, "notfound");
-            		return true;
+            			return true;
         		}
         		if (victims.size() > 1) {
         			sendMSG(sender, "morefound");
-            		return true;
+            			return true;
         		}
-    			final AirstrikeSpawner spawner = new AirstrikeSpawner();
     			final Player victim  = victims.get(0);
-    			final CraftWorld cWorld = (CraftWorld) victim.getWorld();
     			final Location loc = victim.getLocation();
     			final Random rg = new Random();
     			
@@ -156,8 +139,6 @@ public class CommandHandler implements CommandExecutor {
     				new Thread()  {
     					@Override public void run() {
     						setPriority( Thread.MIN_PRIORITY );
-    						CraftEntity spawn;
-    						World world = ((org.bukkit.craftbukkit.CraftWorld)victim.getWorld()).getHandle();
     						for (int i=0; i<camount; i++) {  		
     							int roll = (rg.nextBoolean() ? distance : -distance);
 	    		    				loc.setX( loc.getX() + (roll) );
@@ -201,7 +182,7 @@ public class CommandHandler implements CommandExecutor {
     				}.start();
     				return true;
     			}
-
+			//arrows
     			if (args0.equalsIgnoreCase("arrow") && (checkPermission(sender, "airstrike.as.arrow") || checkPermission(sender, "airstrike.as"))) {
     				if(args.length>2) amount = Integer.valueOf(args[2]); 
     				else amount = config.getInteger("arrowAmount", PluginProperties.arrowAmount);
@@ -231,14 +212,39 @@ public class CommandHandler implements CommandExecutor {
     				}.start();
     				return true;
     			}
+			//Wolves
+    			if (args0.equalsIgnoreCase("wolf") && (checkPermission(sender, "airstrike.as.wolf") || checkPermission(sender, "airstrike.as"))) {
+    				final int distance = config.getInteger("creeperDistance", PluginProperties.creeperDistance);
+    				if(args.length>2) camount = Integer.valueOf(args[2]); 
+    				else camount = config.getInteger("wolfAmount", PluginProperties.wolfAmount);
+    				new Thread()  {
+    					@Override public void run() {
+    						setPriority( Thread.MIN_PRIORITY );
+    						for (int i=0; i<camount; i++) {  		
+    							int roll = (rg.nextBoolean() ? distance : -distance);
+	    		    				loc.setX( loc.getX() + (roll) );
+	    		    				roll = (rg.nextBoolean() ? distance : -distance);
+	    		        			loc.setZ( loc.getZ() + (roll) );
+    							Wolf wolf = victim.getWorld().spawn(loc, Wolf.class);
+							wolf.setAngry(true);
+							wolf.setTarget(victim);
+    							try {
+    		        					sleep(500);
+    		        				} catch (InterruptedException e) {
+    							}
+    		    				}
+    					}
+    				}.start();
+    				return true;         				
+    			}
 
     		}
     		return true;
     	}
 		
-		if(cmd.equals("asset")) {
+	if(cmd.equals("asset")) {
         	if(!checkPermission(sender, "airstrike.asset")) {
-        		player.sendMessage(ChatColor.RED +"Only Admins can use this command!");
+        		sender.sendMessage(ChatColor.RED +"Only Admins can use this command!");
         		return true;
         	}
         	if(args.length == 0 || args[0].equalsIgnoreCase("help")) {
@@ -250,7 +256,7 @@ public class CommandHandler implements CommandExecutor {
         	try {
         		value = args[1];
         	} catch(ArrayIndexOutOfBoundsException ex) {
-        		player.sendMessage(ChatColor.LIGHT_PURPLE+"Wrong Input");
+        		sender.sendMessage(ChatColor.LIGHT_PURPLE+"Wrong Input");
         		return true;
         	}
         	
@@ -269,30 +275,36 @@ public class CommandHandler implements CommandExecutor {
         		sendMSG(sender, "value");
         		return true;
         	}
-			if(args[0].equalsIgnoreCase("TNTAmount")) {
-				config.setProperty("TNTAmount", value);
-				sendMSG(sender, "value");
-				return true;
-			}
-			if(args[0].equalsIgnoreCase("height")) {
-				config.setProperty("height", value);
-				sendMSG(sender, "value");
-				return true;
-			}
-			if(args[0].equalsIgnoreCase("area")) {
-				config.setProperty("area", value);
-				sendMSG(sender, "value");
-				return true;
-			}
-			if(args[0].equalsIgnoreCase("adminsOnly")) {
-				config.setProperty("adminsOnly", value);
-				sendMSG(sender, "value");
-				return true;
-			}
-			if(args[0].equalsIgnoreCase("arrowAmount")) {
-				config.setProperty("arrowAmount", value);
-				sendMSG(sender, "value");
-			}
+		if(args[0].equalsIgnoreCase("TNTAmount")) {
+			config.setProperty("TNTAmount", value);
+			sendMSG(sender, "value");
+			return true;
+		}
+		if(args[0].equalsIgnoreCase("height")) {
+			config.setProperty("height", value);
+			sendMSG(sender, "value");
+			return true;
+		}
+		if(args[0].equalsIgnoreCase("area")) {
+			config.setProperty("area", value);
+			sendMSG(sender, "value");
+			return true;
+		}
+		if(args[0].equalsIgnoreCase("adminsOnly")) {
+			config.setProperty("adminsOnly", value);
+			sendMSG(sender, "value");
+			return true;
+		}
+		if(args[0].equalsIgnoreCase("arrowAmount")) {
+			config.setProperty("arrowAmount", value);
+			sendMSG(sender, "value");
+			return true;
+		}
+        	if(args[0].equalsIgnoreCase("wolfAmount")) {
+        		config.setProperty("wolfAmount", value);
+        		sendMSG(sender, "value");
+        		return true;
+        	}
         }
 		return false;      	
     }	
