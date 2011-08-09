@@ -20,45 +20,25 @@ import org.bukkit.util.Vector;
 public class CommandHandler implements CommandExecutor {
 	private Airstrike plugin;
 	private PluginProperties config;
-	private Plugin perm;
 	
 	private static int area;
 	private static int height;
 	private int amount, camount;
 	
 	
-	public CommandHandler(Airstrike instance, PluginProperties config, Plugin permissions) {
+	public CommandHandler(Airstrike instance, PluginProperties config) {
 		plugin = instance;
 		plugin.getCommand("as").setExecutor(this);
 		plugin.getCommand("asset").setExecutor(this);
 		this.config = config;
-		this.perm = permissions;
 	}
 	private boolean checkPermission(CommandSender sender, String node) {
-		// Check if the command was sent from console
-		if(sender.toString().contains("ColouredConsoleSender")){
-			return true;
-		}
-		Player player = (Player) sender;
-		//Check if Permissions is running, else check Ops.txt
-		if(perm != null) {
-			return plugin.Permissions.has(player, node);
-		}
-		if(player.isOnline()) {
-			return true;
-		}		
-		return false;
+		return sender.hasPermission(node);
 	}
 	private void sendMSG(CommandSender sender, String msg) {
 		CommandSender player = sender;
 		if(msg.equalsIgnoreCase("help")) {
-			player.sendMessage(ChatColor.YELLOW+"Airstrike:");
-			player.sendMessage(ChatColor.GOLD+"/as <tnt/cr/arrow> <player> <amount> <height>");
-			player.sendMessage(ChatColor.GOLD+"<tnt/cr/arrow> TNT, arrow, or Creeper? If no <amount> is given the default value is used.");
-			player.sendMessage(ChatColor.GOLD+"<height> is for TNT only.");
-			if(checkPermission(sender, "airstrike.asset")) {
-				player.sendMessage(ChatColor.LIGHT_PURPLE+"/asset help - shows admin commands");
-			}
+			sender.sendMessage("For help, type /as.");
 			return;
 		}
 		if(msg.equalsIgnoreCase("notfound")) {
@@ -94,29 +74,20 @@ public class CommandHandler implements CommandExecutor {
 		String cmd = command.getName().toLowerCase();
 		final Server server = plugin.getServer();
 
-		if (cmd.equals("as")) {		
-			if(!checkPermission(sender, "airstrike.as") ) {	
-				sendMSG(sender, "help");
-        		return true;
-        	}
-		String args0;
+		if (cmd.equals("as")) {
+
+			final String args0;
 			
-		try {
-	    		args0 = args[0];
-	    	} catch(ArrayIndexOutOfBoundsException ex) {
-	    		sendMSG(sender, "help");
-	    		return true;
-	    	}
-			
-        	if (args0.equalsIgnoreCase("help")) {
-    			sendMSG(sender, "help");
-        		return true;
-        	}
-    		else {
-			if(args.length < 2) {
-				sendMSG(sender, "help");
-				return true;
+			if (args.length < 2) {
+				return false;
 			}
+
+			args0 = args[0];
+
+			if (args0.equals("help")) {
+				return false;
+			}
+
     			final List<Player> victims = server.matchPlayer(args[1]);
         		if (victims.size() < 1) {
         			sendMSG(sender, "notfound");
@@ -132,7 +103,7 @@ public class CommandHandler implements CommandExecutor {
     			
     			// Creeper
     			
-    			if (args0.equalsIgnoreCase("cr") && (checkPermission(sender, "airstrike.as.cr") || checkPermission(sender, "airstrike.as"))) {
+    			if (args0.equalsIgnoreCase("cr") && checkPermission(sender, "airstrike.as.cr")) {
     				final int distance = config.getInteger("creeperDistance", PluginProperties.creeperDistance);
     				if(args.length>2) camount = Integer.valueOf(args[2]); 
     				else camount = config.getInteger("creeperAmount", PluginProperties.creeperAmount);
@@ -147,16 +118,16 @@ public class CommandHandler implements CommandExecutor {
     							Creeper creep = victim.getWorld().spawn(loc, Creeper.class);
     							try {
     		        					sleep(500);
-    		        				}catch (InterruptedException e) {
+    		        				} catch (InterruptedException e) {
     							}
-    		    			}
+    		    				}
     					}
     				}.start();
     				return true;         				
     			}
     			
     			// TNT
-    			if (args0.equalsIgnoreCase("tnt") && (checkPermission(sender, "airstrike.as.tnt") || checkPermission(sender, "airstrike.as"))) {
+    			if (args0.equalsIgnoreCase("tnt") && checkPermission(sender, "airstrike.as.tnt")) {
     				if(args.length>2) amount = Integer.valueOf(args[2]); 
     				else amount = config.getInteger("TNTAmount", PluginProperties.TNTAmount);
     				
@@ -167,23 +138,24 @@ public class CommandHandler implements CommandExecutor {
     					@Override 
     					public void run() {
     						setPriority( Thread.MIN_PRIORITY );
-    						for (int i=0; i<amount; i++) {  
-    		        			Location loc = victims.get(0).getLocation();
-    		        			loc.setY(loc.getY()+height);
-    		        			loc.setX( loc.getX() + (rg.nextInt((2*area)+1)-area) );
-    		        			loc.setZ( loc.getZ() + (rg.nextInt((2*area)+1)-area) );
-            		        		TNTPrimed tntp = victim.getWorld().spawn(loc, TNTPrimed.class);
-    		        			try {
-    		        				sleep(500);
-    		        			}catch (InterruptedException e) {
-    							}
-    		    			}
+    						for (int i = 0; i < amount; i++) {  
+	    		        			Location loc = victims.get(0).getLocation();
+	    		        			loc.setY(loc.getY()+height);
+	    		        			loc.setX( loc.getX() + (rg.nextInt((2*area)+1)-area) );
+	    		        			loc.setZ( loc.getZ() + (rg.nextInt((2*area)+1)-area) );
+		    		        		TNTPrimed tntp = victim.getWorld().spawn(loc, TNTPrimed.class);
+	    		        			try {
+	    		        				sleep(500);
+	    		        			} catch (InterruptedException e) {
+	    						}
+    		    				}
     					}
     				}.start();
     				return true;
     			}
+
 			//arrows
-    			if (args0.equalsIgnoreCase("arrow") && (checkPermission(sender, "airstrike.as.arrow") || checkPermission(sender, "airstrike.as"))) {
+    			if (args0.equalsIgnoreCase("arrow") && checkPermission(sender, "airstrike.as.arrow")) {
     				if(args.length>2) amount = Integer.valueOf(args[2]); 
     				else amount = config.getInteger("arrowAmount", PluginProperties.arrowAmount);
     				area = config.getInteger("area", PluginProperties.area);
@@ -212,8 +184,9 @@ public class CommandHandler implements CommandExecutor {
     				}.start();
     				return true;
     			}
+
 			//Wolves
-    			if (args0.equalsIgnoreCase("wolf") && (checkPermission(sender, "airstrike.as.wolf") || checkPermission(sender, "airstrike.as"))) {
+    			if (args0.equalsIgnoreCase("wolf") && checkPermission(sender, "airstrike.as.wolf")) {
     				final int distance = config.getInteger("creeperDistance", PluginProperties.creeperDistance);
     				if(args.length>2) camount = Integer.valueOf(args[2]); 
     				else camount = config.getInteger("wolfAmount", PluginProperties.wolfAmount);
@@ -225,6 +198,7 @@ public class CommandHandler implements CommandExecutor {
 	    		    				loc.setX( loc.getX() + (roll) );
 	    		    				roll = (rg.nextBoolean() ? distance : -distance);
 	    		        			loc.setZ( loc.getZ() + (roll) );
+							loc.setY(victim.getWorld().getHighestBlockAt(loc).getY() + 0.5);
     							Wolf wolf = victim.getWorld().spawn(loc, Wolf.class);
 							wolf.setAngry(true);
 							wolf.setTarget(victim);
@@ -238,9 +212,24 @@ public class CommandHandler implements CommandExecutor {
     				return true;         				
     			}
 
+			//Reverse Airstrike
+    			if (args0.equalsIgnoreCase("reverse") && checkPermission(sender, "airstrike.as.reverse")) {
+				double verticalAccel = 3.5;
+				if (args.length > 2) {
+					verticalAccel = Double.valueOf(args[2]);
+				}
+				Location victimLoc = victim.getLocation();
+
+				victimLoc.setY(victim.getWorld().getHighestBlockAt(victimLoc).getY() + 0.5);
+
+				victim.teleport(victimLoc);
+    				victim.setVelocity(new Vector(0, verticalAccel, 0)); //Spaaaaaaacce
+    				return true;         				
+    			}
+
+			sender.sendMessage(ChatColor.RED + "Error executing Airstrike. Do you have permission?");
+    			return false;
     		}
-    		return true;
-    	}
 		
 	if(cmd.equals("asset")) {
         	if(!checkPermission(sender, "airstrike.asset")) {
