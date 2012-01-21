@@ -3,6 +3,8 @@ package airstrike;
 import java.util.List;
 import java.util.Random;
 
+import java.lang.reflect.Field;
+
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Server;
@@ -12,10 +14,15 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Creeper;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.ThrownPotion;
 import org.bukkit.entity.TNTPrimed;
 import org.bukkit.entity.Wolf;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.util.Vector;
+
+import org.bukkit.craftbukkit.entity.CraftThrownPotion;
+
+import net.minecraft.server.EntityPotion;
 
 public class CommandHandler implements CommandExecutor {
 	private Airstrike plugin;
@@ -226,6 +233,41 @@ public class CommandHandler implements CommandExecutor {
     				victim.setVelocity(new Vector(0, verticalAccel, 0)); //Spaaaaaaacce
     				return true;         				
     			}
+
+			//Potions
+			if (args0.equalsIgnoreCase("potion") && checkPermission(sender, "airstrike.as.potion")) {
+				final int pamount;
+				if (args.length > 2) {
+					pamount = Integer.parseInt(args[2]);
+				} else {
+					pamount = config.getInteger("potionAmount", PluginProperties.potionAmount);
+				}
+				final short ptype;
+				if (args.length > 3) {
+					ptype = Short.parseShort(args[3]);
+				} else {
+					ptype = (short) 4; //Potion of poison
+				}
+				server.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
+					public int count = pamount;
+					public void run() {
+						CraftThrownPotion potion = (CraftThrownPotion) victim.getWorld().spawn(victim.getLocation(), ThrownPotion.class);
+						try {
+							EntityPotion nmspotion = potion.getHandle();
+							Field potionTypeField = EntityPotion.class.getDeclaredField("d");
+							potionTypeField.setAccessible(true);
+							potionTypeField.setShort(nmspotion, ptype);
+						} catch(Throwable t) {
+							System.err.println("[MoreAirstrike] Failed to assign damage value to potion.");
+							t.printStackTrace();
+						}
+						count--;
+						if (count > 0) {
+							server.getScheduler().scheduleSyncDelayedTask(plugin, this, 10);
+						}
+					}
+				}, 0);
+			}
 
 			sender.sendMessage(ChatColor.RED + "Error executing Airstrike. Do you have permission?");
     			return false;

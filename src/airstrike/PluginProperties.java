@@ -17,19 +17,21 @@ public class PluginProperties extends Properties {
 	static int	area = 6;
 	public static int arrowAmount = 30;
 	public static int wolfAmount = 2;
+	public static int potionAmount = 5;
 	static boolean adminsOnly = false;
 	
 	private String fileName, dir;
 	FileWriter writer;
 	FileReader reader;
 	private String info = "destroyBlocks: true: Blocks get destroyed - false: Block won't get touched\n" 
-								+"height: Sets height in which the TNT will spawn\n"
-								+"area: Defines the cuboid area size in which the TNT will spawn\n"
-								+"TNTAmount: Sets the amount for /as <player>\n"
-								+"creeperDistance: Distance in which creepers and wolves will spawn\n"
-								+"creeperAmount: Amount of creepers\n"
-								+"arrowAmount: sets the amount for /as arrow <player>\n"
-								+"wolfAmount: amount of wolves";
+					+ "height: Sets height in which the TNT will spawn\n"
+					+ "area: Defines the cuboid area size in which the TNT will spawn\n"
+					+ "TNTAmount: Sets the amount for /as <player>\n"
+					+ "creeperDistance: Distance in which creepers and wolves will spawn\n"
+					+ "creeperAmount: Amount of creepers\n"
+					+ "arrowAmount: sets the amount for /as arrow <player>\n"
+					+ "wolfAmount: amount of wolves"
+					+ "potionAmount: amount of throw potions";
 	
 	public PluginProperties(String file, String dir) {
 		this.fileName = file;
@@ -57,6 +59,7 @@ public class PluginProperties extends Properties {
 			 getInteger("area", area);
 			getInteger("arrowAmount", arrowAmount);
 			getInteger("wolfAmount", wolfAmount);
+			getInteger("potionAmount", potionAmount);
 		}
 	}	
 
