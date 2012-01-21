@@ -48,6 +48,7 @@
     <javac destdir="${bin}" includeantruntime="false">
       <src path="${src}" />
       <classpath refid="library-path" />
+      <compilerarg value="-Xlint"/>
     </javac>
   </target>
 

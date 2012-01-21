@@ -14,13 +14,12 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Creeper;
 import org.bukkit.entity.Player;
-import org.bukkit.entity.ThrownPotion;
 import org.bukkit.entity.TNTPrimed;
 import org.bukkit.entity.Wolf;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.util.Vector;
 
-import org.bukkit.craftbukkit.entity.CraftThrownPotion;
+import org.bukkit.craftbukkit.CraftWorld;
 
 import net.minecraft.server.EntityPotion;
 
@@ -251,14 +250,16 @@ public class CommandHandler implements CommandExecutor {
 				server.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
 					public int count = pamount;
 					public void run() {
-						CraftThrownPotion potion = (CraftThrownPotion) victim.getWorld().spawn(victim.getLocation(), ThrownPotion.class);
+						Location loc = victim.getLocation();
+						loc.setY(loc.getY() + 20);
+						loc.setX(loc.getX() + (rg.nextInt((2*area)+1)-area));
+    		        			loc.setZ(loc.getZ() + (rg.nextInt((2*area)+1)-area));
 						try {
-							EntityPotion nmspotion = potion.getHandle();
-							Field potionTypeField = EntityPotion.class.getDeclaredField("d");
-							potionTypeField.setAccessible(true);
-							potionTypeField.setShort(nmspotion, ptype);
+							CraftWorld cWorld = (CraftWorld) victim.getWorld();
+							EntityPotion nmspotion = new EntityPotion(cWorld.getHandle(), loc.getX(), loc.getY(), loc.getZ(), ptype);
+							cWorld.getHandle().addEntity(nmspotion);
 						} catch(Throwable t) {
-							System.err.println("[MoreAirstrike] Failed to assign damage value to potion.");
+							System.err.println("[MoreAirstrike] Failed to spawn potion: You may want to check for updates for Airstrike.");
 							t.printStackTrace();
 						}
 						count--;

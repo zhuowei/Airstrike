@@ -6,9 +6,9 @@ commands:
   as:
     description: bomb players with TNT, creepers, angry wolves, or arrows.
     usage: |
-             /<command> <tnt/cr/arrow/wolf/reverse> <player> <amount> <height>
-             <tnt/cr/arrow/wolf/reverse> TNT, arrow, wolf, or Creeper? If no <amount> is given the default value is used.
-             <height> is for TNT only.
+             /<command> <tnt/cr/arrow/wolf/reverse/potion> <player> <amount> <height/potionvalue>
+             <tnt/cr/arrow/wolf/reverse/potion> TNT, arrow, wolf, potion of poison, or Creeper? If no <amount> is given the default value is used.
+             <height/potionvalue> is for TNT and potions only. 
   asset:
       description: Used to set up the config
       usage: |
@@ -29,6 +29,9 @@ permissions:
   airstrike.as.reverse:
     description: Allows the player to access /as reverse.
 
+  airstrike.as.potion:
+    description: Allows the player to access /as potion.
+
   airstrike.as:
     description: Allows the player to use all features of the /as command.
     default: op
@@ -38,6 +41,7 @@ permissions:
       airstrike.as.arrow: true
       airstrike.as.wolf: true
       airstrike.as.reverse: true
+      airstrike.as.potion: true
 
   airstrike.asset:
     description: Allows the player to change Airstrike's config.
