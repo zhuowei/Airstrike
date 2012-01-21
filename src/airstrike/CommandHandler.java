@@ -251,12 +251,10 @@ public class CommandHandler implements CommandExecutor {
 					public int count = pamount;
 					public void run() {
 						Location loc = victim.getLocation();
-						loc.setY(loc.getY() + 20);
-						loc.setX(loc.getX() + (rg.nextInt((2*area)+1)-area));
-    		        			loc.setZ(loc.getZ() + (rg.nextInt((2*area)+1)-area));
 						try {
 							CraftWorld cWorld = (CraftWorld) victim.getWorld();
-							EntityPotion nmspotion = new EntityPotion(cWorld.getHandle(), loc.getX(), loc.getY(), loc.getZ(), ptype);
+							EntityPotion nmspotion = new EntityPotion(cWorld.getHandle(), loc.getX() + (rg.nextInt((2*area)+1)-area), 
+								loc.getY() + 10, loc.getZ() + (rg.nextInt((2*area)+1)-area), ptype);
 							cWorld.getHandle().addEntity(nmspotion);
 						} catch(Throwable t) {
 							System.err.println("[MoreAirstrike] Failed to spawn potion: You may want to check for updates for Airstrike.");
@@ -268,6 +266,7 @@ public class CommandHandler implements CommandExecutor {
 						}
 					}
 				}, 0);
+				return true;
 			}
 
 			sender.sendMessage(ChatColor.RED + "Error executing Airstrike. Do you have permission?");

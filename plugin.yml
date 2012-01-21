@@ -4,7 +4,7 @@ version: 1.6
 authors: [muCkk, zhuowei]
 commands:
   as:
-    description: bomb players with TNT, creepers, angry wolves, or arrows.
+    description: bomb players with TNT, creepers, angry wolves, arrows, or splash potions.
     usage: |
              /<command> <tnt/cr/arrow/wolf/reverse/potion> <player> <amount> <height/potionvalue>
              <tnt/cr/arrow/wolf/reverse/potion> TNT, arrow, wolf, potion of poison, or Creeper? If no <amount> is given the default value is used.

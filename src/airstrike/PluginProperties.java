@@ -24,13 +24,13 @@ public class PluginProperties extends Properties {
 	FileWriter writer;
 	FileReader reader;
 	private String info = "destroyBlocks: true: Blocks get destroyed - false: Block won't get touched\n" 
-					+ "height: Sets height in which the TNT will spawn\n"
+					+ "height: Sets height in which the TNT/potions will spawn\n"
 					+ "area: Defines the cuboid area size in which the TNT will spawn\n"
 					+ "TNTAmount: Sets the amount for /as <player>\n"
 					+ "creeperDistance: Distance in which creepers and wolves will spawn\n"
 					+ "creeperAmount: Amount of creepers\n"
 					+ "arrowAmount: sets the amount for /as arrow <player>\n"
-					+ "wolfAmount: amount of wolves"
+					+ "wolfAmount: amount of wolves\n"
 					+ "potionAmount: amount of throw potions";
 	
 	public PluginProperties(String file, String dir) {
