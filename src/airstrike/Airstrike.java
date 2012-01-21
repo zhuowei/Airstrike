@@ -1,7 +1,6 @@
 package airstrike;
 
 import org.bukkit.event.Event;
-import org.bukkit.event.Event.Priority;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.PluginManager;
@@ -28,7 +27,7 @@ public class Airstrike extends JavaPlugin {
 		config = new PluginProperties(propertiesFile, dir);
 		config.load();
 		PluginManager pm = getServer().getPluginManager();
-		if (!config.getBoolean("destroyBlocks", false)) pm.registerEvent(Event.Type.ENTITY_EXPLODE, this.entityListener, Priority.Normal, this);
+		if (!config.getBoolean("destroyBlocks", false)) pm.registerEvents(this.entityListener, this);
 		PluginDescriptionFile pdfFile = this.getDescription();
 		new CommandHandler(this, config);        
 	}
